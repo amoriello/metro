@@ -1,10 +1,19 @@
 (source gnu)
 (source melpa)
 
-(package-file "TODO")
+;; Core --- core/core.el
+(depends-on "f")
+(depends-on "s")
+(depends-on "ecukes")
+(depends-on "ert-runner")
+(depends-on "el-mock")
+(depends-on "use-package")
 
-(development
- (depends-on "f")
- (depends-on "ecukes")
- (depends-on "ert-runner")
- (depends-on "el-mock"))
+;; UI --- core/core-ui.el
+(depends-on "color-theme-solarized")
+(depends-on "highlight-numbers")
+(depends-on "nlinum")
+
+;; VCS --- core/core-vcs.el
+(depends-on "magit")
+
