@@ -21,7 +21,6 @@
  fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
                               fringe-indicator-alist)
 
- blink-matching-paren t ; don't blink--too distracting
  show-paren-delay 0.075
  show-paren-highlight-openparen t
  show-paren-when-point-inside-paren t
