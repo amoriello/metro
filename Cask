@@ -16,7 +16,7 @@
 (depends-on "beacon")
 (depends-on "hl-line")
 (depends-on "highlight-numbers")
-
+(depends-on "which-key")
 
 
 ;; VCS --- core/core-vcs.el

@@ -39,9 +39,16 @@ Examples:
 
 
 ;;; Core
+(defconst metro-version "0.0.1"
+  "Current version of metro emacs")
+
 (defconst metro-emacs-dir
   (expand-file-name user-emacs-directory)
   "The path to this emacs.d directory")
+
+(defconst metro-core-dir
+  (expand-file-name "core" metro-emacs-dir)
+  "Where essential files are stored")
 
 (defconst metro-auto-cask
   (expand-file-name
@@ -53,6 +60,20 @@ Examples:
    (format ".cask/%s.%s/elpa" emacs-major-version emacs-minor-version)
    metro-emacs-dir)
   "Where plugins are installed (by cask)")
+
+;;
+;; Bootstrap
+;;
+
+(defvar metro--load-path load-path
+  "Initial `load-path', used as a base so we don't clobber it on consecutive
+reloads.")
+
+(defvar metro-packages '()
+  "A list of all installed packages. Filled internally; do not edit it!")
+
+;; Just the bear necessities... ♫
+(setq load-path (append (list metro-core-dir) metro--load-path))
 
 
 ;;; External package management (Cask)
@@ -165,3 +186,7 @@ Examples:
   (add-hook! nlinum-mode
     (setq nlinum--width (length (save-excursion (goto-char (point-max))
                                                 (format-mode-line "%l"))))))
+
+(use-package which-key
+  :config
+  (which-key-mode))
