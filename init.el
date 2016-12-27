@@ -1,96 +1,4 @@
-;;; Defuns
-(defmacro add-hook! (hook &rest func-or-forms)
-  "A convenience macro for `add-hook'.
-
-HOOK can be one hook or a list of hooks. If the hook(s) are not quoted, -hook is
-appended to them automatically. If they are quoted, they are used verbatim.
-
-FUNC-OR-FORMS can be a quoted symbol, a list of quoted symbols, or forms. Forms will be
-wrapped in a lambda. A list of symbols will expand into a series of add-hook calls.
-
-Examples:
-    (add-hook! 'some-mode-hook 'enable-something)
-    (add-hook! some-mode '(enable-something and-another))
-    (add-hook! '(one-mode-hook second-mode-hook) 'enable-something)
-    (add-hook! (one-mode second-mode) 'enable-something)
-    (add-hook! (one-mode second-mode) (setq v 5) (setq a 2))"
-  (declare (indent defun) (debug t))
-  (unless func-or-forms
-    (error "add-hook!: FUNC-OR-FORMS is empty"))
-  (let* ((val (car func-or-forms))
-         (quoted (eq (car-safe hook) 'quote))
-         (hook (if quoted (cadr hook) hook))
-         (funcs (if (eq (car-safe val) 'quote)
-                    (if (cdr-safe (cadr val))
-                        (cadr val)
-                      (list (cadr val)))
-                  (list func-or-forms)))
-         (forms '()))
-    (mapc
-     (lambda (f)
-       (let ((func (cond ((symbolp f) `(quote ,f))
-                         (t `(lambda (&rest _) ,@func-or-forms)))))
-         (mapc
-          (lambda (h)
-            (push `(add-hook ',(if quoted h (intern (format "%s-hook" h))) ,func) forms))
-          (-list hook)))) funcs)
-    `(progn ,@forms)))
-
-
-
-;;; Core
-(defconst metro-version "0.0.1"
-  "Current version of metro emacs")
-
-(defconst metro-emacs-dir
-  (expand-file-name user-emacs-directory)
-  "The path to this emacs.d directory")
-
-(defconst metro-core-dir
-  (expand-file-name "core" metro-emacs-dir)
-  "Where essential files are stored")
-
-(defconst metro-auto-cask
-  (expand-file-name
-   (format "%s/auto-cask.el" metro-emacs-dir)
-  "The path to auto-cask.el"))
-
-(defconst metro-packages-dir
-  (expand-file-name
-   (format ".cask/%s.%s/elpa" emacs-major-version emacs-minor-version)
-   metro-emacs-dir)
-  "Where plugins are installed (by cask)")
-
-;;
-;; Bootstrap
-;;
-
-(defvar metro--load-path load-path
-  "Initial `load-path', used as a base so we don't clobber it on consecutive
-reloads.")
-
-(defvar metro-packages '()
-  "A list of all installed packages. Filled internally; do not edit it!")
-
-;; Just the bear necessities... ♫
-(setq load-path (append (list metro-core-dir) metro--load-path))
-
-
-;;; External package management (Cask)
-(require 'auto-cask metro-auto-cask)
-(auto-cask/setup metro-emacs-dir)		; locate and setup cask.el
-
-(setq inhibit-startup-message t)
-
-(setq-default
- package--init-file-ensured t			; stop auto-adding (package-initialize) on my behalf
- package-user-dir metro-packages-dir		; packages are installed by cask, in .emacs/.cask dir
- package-enable-at-startup nil			; do not load packages after init.el
- package-archives
- '(("gnu"   . "https://elpa.gnu.org/packages/")
-   ("melpa" . "https://melpa.org/packages/")
-   ("org"   . "https://orgmode.org/elpa")))
-
+(load (concat user-emacs-directory "core/core"))
 
 ;;; Completion
 (use-package company
@@ -113,7 +21,7 @@ reloads.")
  fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
                               fringe-indicator-alist)
 
- blink-matching-paren nil ; don't blink--too distracting
+ blink-matching-paren t ; don't blink--too distracting
  show-paren-delay 0.075
  show-paren-highlight-openparen t
  show-paren-when-point-inside-paren t
