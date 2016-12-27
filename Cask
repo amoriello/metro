@@ -13,7 +13,15 @@
 (depends-on "color-theme-solarized")
 (depends-on "highlight-numbers")
 (depends-on "nlinum")
+(depends-on "beacon")
+(depends-on "hl-line")
+(depends-on "highlight-numbers")
+
+
 
 ;; VCS --- core/core-vcs.el
 (depends-on "magit")
 
+
+;; Completion
+(depends-on "company")
