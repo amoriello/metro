@@ -86,6 +86,11 @@
   (add-hook!
     (prog-mode markdown-mode conf-mode)
     'nlinum-mode)
+    ;; FIXME This only works if hl-line is active! Why?
+  (add-hook! nlinum-mode
+    (if nlinum-mode-hook
+        (add-hook 'post-command-hook 'metro|nlinum-hl-line nil t)
+      (remove-hook 'post-command-hook 'metro|nlinum-hl-line t)))
   :config
   ;; Calculate line number column width beforehand
   (add-hook! nlinum-mode
