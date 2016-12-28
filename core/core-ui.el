@@ -1,5 +1,14 @@
 ;;; core-ui.el
 
+(defgroup metro-themes nil
+  "Options for metro-theme"
+  :group 'faces)
+
+(defface metro-nlinum-highlight
+  '((((background dark))  (:bold t :foreground "dodger blue")))
+  "Bold face for highlighting the current line in Hl-Line mode."
+  :group 'metro-themes)
+
 ;;
 ;; Configuration
 ;;
