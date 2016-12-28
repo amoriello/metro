@@ -67,6 +67,14 @@ reloads.")
   (setq load-path (car paths)
         metro-paclages (nth 1 paths)))
 
+;; Many functions are lazy-loaded. The autoloads.el file contains info on where
+;; to find them if they're called. Tries to generate autoloads.el if one isn't
+;; found.
+(unless (require 'autoloads nil t)
+  (metro-reload-autoloads)
+  (unless (require 'autoloads nil t)
+    (error "Autoloads weren't generated! Run `make autoloads`")))
+
 ;;; External package management (Cask)
 ;(require 'auto-cask metro-auto-cask)
 ;(auto-cask/setup metro-emacs-dir)		; locate and setup cask.el

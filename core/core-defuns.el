@@ -65,5 +65,22 @@ while emacs was open!"
       (list -load-path
             (mapcar '--subdirs -packages-path)))))
 
+
+(defun metro-reload-autoloads ()
+  "Regenerate and reload autoloads.el."
+  (interactive)
+  (let ((generated-autoload-file (concat metro-core-dir "/autoloads.el")))
+    (when (file-exists-p generated-autoload-file)
+      (delete-file generated-autoload-file)
+      (message "Deleted old autoloads.el"))
+    (mapc (lambda (dir)
+            (update-directory-autoloads (concat dir "/defuns"))
+            (message "Scanned: %s" dir))
+          (list metro-core-dir))
+    (when (called-interactively-p 'interactive)
+      (load "autoloads"))
+    (message "Done!")))
+
+
 (provide 'core-defuns)
 ;;; core-defuns.el ends here

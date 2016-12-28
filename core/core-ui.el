@@ -80,6 +80,8 @@
   :preface
   ;(setq linum-format "%3d ")
   (defvar nlinum-format "%4d ")
+  (defvar metro--hl-nlinum-overlay nil)
+  (defvar metro--hl-nlinum-line nil)
   :init
   (add-hook!
     (prog-mode markdown-mode conf-mode)
