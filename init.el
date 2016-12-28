@@ -1,6 +1,6 @@
 (load (concat user-emacs-directory "core/core"))
 
-(require 'core-ui)
+(metro core-ui)
 
 ;;; Completion
 (use-package company

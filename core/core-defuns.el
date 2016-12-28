@@ -1,5 +1,29 @@
 ;;; core-defuns.el
 
+;; Bootstrap macro
+(defmacro metro (&rest packages)
+  "Bootstrap METRO emacs and initialize PACKAGES"
+  `(let (file-name-handler-alist)
+     ;; Local settings
+     (load "~/.emacs.local.el" t t)
+     ;; Bootstrap
+     (unless noninteractive
+       ,@(mapcar (lambda (pkg)
+                   (let ((lib-path (locate-library (symbol-name pkg))))
+                     (unless lib-path
+                       (error "Initfile not found: %s" pkg))
+                     `(require ',pkg ,(file-name-sans-extension lib-path))))
+                 packages)
+       (when window-system
+         (require 'server)
+         (unless (server-running-p)
+           (server-start)))
+       ;; Prevent any auto-displayed text + benchmarking
+       (advice-add 'display-startup-echo-area-message :override 'ignore)
+       (message ""))
+     (setq-default gc-cons-threshold 4388608
+                   gc-cons-percentage 0.4)))
+
 (defmacro add-hook! (hook &rest func-or-forms)
   "A convenience macro for `add-hook'.
 
