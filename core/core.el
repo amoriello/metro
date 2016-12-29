@@ -35,6 +35,15 @@
    metro-emacs-dir)
   "Where plugins are installed (by cask)")
 
+(defconst metro-private-dir
+  (expand-file-name "private" metro-emacs-dir)
+  "Where private configuration filse and assets are stored (like snippets)")
+
+(defconst metro-temp-dir
+  (format "%s/cache/%s" metro-private-dir (system-name))
+  "Hostname-based elisp temp directories")
+
+
 (setq inhibit-startup-message t)
 
 (setq-default

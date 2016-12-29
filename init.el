@@ -1,6 +1,7 @@
 (load (concat user-emacs-directory "core/core"))
 
-(metro core-ui)
+(metro core-ui		; draw me like on of your French editors
+       core-editor)
 
 ;;; Completion
 (use-package company
