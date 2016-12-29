@@ -25,3 +25,4 @@
 
 ;; Completion
 (depends-on "company")
+(depends-on "company-statistics")
