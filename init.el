@@ -4,9 +4,5 @@
        core-editor      ; general editor configuration
        core-company)
 
-(use-package which-key
-  :config
-  (which-key-mode))
-
 (use-package magit
   :commands (magit-status))

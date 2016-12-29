@@ -68,5 +68,10 @@
       ;; no extra frames
       ediff-window-setup-function 'ediff-setup-windows-plain)
 
+;; Show which key completion is available after a short delay
+(use-package which-key
+  :config
+  (which-key-mode))
+
 (provide 'core-editor)
 ;;; end of core-editor.el
