@@ -63,5 +63,10 @@
   (add-hook! 'editorconfig-custom-hooks
     (if indent-tabs-mode (whitespace-mode +1))))
 
+;; Ediff
+(setq ediff-split-window-function 'split-window-horizontally
+      ;; no extra frames
+      ediff-window-setup-function 'ediff-setup-windows-plain)
+
 (provide 'core-editor)
 ;;; end of core-editor.el
