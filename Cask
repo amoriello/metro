@@ -29,6 +29,9 @@
 ;; VCS --- core/core-vcs.el
 (depends-on "magit")
 
+;; Ivy --- core/core-ivy.el
+(depends-on "ivy")
+(depends-on "counsel")
 
 ;; Completion
 (depends-on "company")
