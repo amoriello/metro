@@ -16,7 +16,10 @@
 (depends-on "beacon")
 (depends-on "hl-line")
 (depends-on "highlight-numbers")
+
+;; Editor -- core/core-editor.el
 (depends-on "which-key")
+(depends-on "undo-tree")
 
 ;; Evil -- core/core-evil.el
 (depends-on "evil")

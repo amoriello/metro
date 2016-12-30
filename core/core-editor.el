@@ -73,5 +73,12 @@
   :config
   (which-key-mode))
 
+;; Undo tree with C-u
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode t))
+(use-package swiper
+  :commands (swiper swiper-all))
+
 (provide 'core-editor)
 ;;; end of core-editor.el
