@@ -18,6 +18,13 @@
 (depends-on "highlight-numbers")
 (depends-on "which-key")
 
+;; Evil -- core/core-evil.el
+(depends-on "evil")
+(depends-on "evil-anzu")
+(depends-on "evil-args")
+(depends-on "evil-commentary")
+(depends-on "evil-easymotion")
+(depends-on "evil-search-highlight-persist")
 
 ;; VCS --- core/core-vcs.el
 (depends-on "magit")
