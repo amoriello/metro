@@ -24,6 +24,20 @@
      (setq-default gc-cons-threshold 4388608
                    gc-cons-percentage 0.4)))
 
+(defmacro after! (feature &rest forms)
+  "A smart wrapper around `with-eval-after-load', that supresses warnings
+during compilation."
+  (declare (indent defun) (debug t))
+  `(,(if (or (not (boundp 'byte-compile-current-file))
+             (not byte-compile-current-file)
+             (if (symbolp feature)
+                 (require feature nil :no-error)
+               (load feature :no-message :no-error)))
+         'progn
+       (message "after: cannot find %s" feature)
+       'with-no-warnings)
+    (with-eval-after-load ',feature ,@forms)))
+
 (defmacro add-hook! (hook &rest func-or-forms)
   "A convenience macro for `add-hook'.
 
@@ -89,7 +103,6 @@ while emacs was open!"
       (list -load-path
             (mapcar '--subdirs -packages-path)))))
 
-
 (defun metro-reload-autoloads ()
   "Regenerate and reload autoloads.el."
   (interactive)
@@ -105,6 +118,96 @@ while emacs was open!"
       (load "autoloads"))
     (message "Done!")))
 
+(after! evil
+  (defalias 'ex! 'evil-ex-define-cmd)
+
+  ;; NOTE evil-mode doesn't read local `evil-ex-commands', and will not
+  ;; autocomplete local commands.
+  (defun ex-local! (cmd fn)
+    "Define a buffer-local ex command."
+    (unless (local-variable-p 'evil-ex-commands)
+      (setq-local evil-ex-commands (copy-alist evil-ex-commands)))
+    (evil-ex-define-cmd cmd fn))
+
+  ;; Register keywords for proper indentation (see `map!')
+  (put ':prefix      'lisp-indent-function 'defun)
+  (put ':map         'lisp-indent-function 'defun)
+  (put ':after       'lisp-indent-function 'defun)
+  (put ':when        'lisp-indent-function 'defun)
+  (put ':unless      'lisp-indent-function 'defun)
+  (put ':leader      'lisp-indent-function 'defun)
+  (put ':localleader 'lisp-indent-function 'defun)
+
+  (defmacro map! (&rest rest)
+    (let ((i 0)
+          (keymaps (if (boundp 'keymaps) keymaps))
+          (default-keymaps '((current-global-map)))
+          (state-map '(("n" . normal)
+                       ("v" . visual)
+                       ("i" . insert)
+                       ("e" . emacs)
+                       ("o" . operator)
+                       ("m" . motion)
+                       ("r" . replace)))
+          (prefix (if (boundp 'prefix) prefix))
+          key def states forms)
+      (unless keymaps
+        (setq keymaps default-keymaps))
+      (while rest
+        (setq key (pop rest))
+        (push
+         (reverse
+          (cond ((listp key) ; it's a sub exp
+                 `(,(macroexpand `(map! ,@key))))
+
+                ((keywordp key)
+                 (when (memq key '(:leader :localleader))
+                   (push (cond ((eq key :leader)
+                                doom-leader)
+                               ((eq key :localleader)
+                                doom-localleader))
+                         rest)
+                   (setq key :prefix))
+                 (pcase key
+                   (:prefix  (setq prefix (concat prefix (kbd (pop rest)))) nil)
+                   (:map     (setq keymaps (-list (pop rest))) nil)
+                   (:unset  `(,(macroexpand `(map! ,(kbd (pop rest)) nil))))
+                   (:after   (prog1 `((after! ,(pop rest)   ,(macroexpand `(map! ,@rest)))) (setq rest '())))
+                   (:when    (prog1 `((if ,(pop rest)       ,(macroexpand `(map! ,@rest)))) (setq rest '())))
+                   (:unless  (prog1 `((if (not ,(pop rest)) ,(macroexpand `(map! ,@rest)))) (setq rest '())))
+                   (otherwise ; might be a state prefix
+                    (mapc (lambda (letter)
+                            (if (assoc letter state-map)
+                                (push (cdr (assoc letter state-map)) states)
+                              (user-error "Invalid mode prefix %s in key %s" letter key)))
+                          (split-string (substring (symbol-name key) 1) "" t))
+                    (unless states
+                      (user-error "Unrecognized keyword %s" key)) nil)))
+
+                ;; It's a key-def pair
+                ((or (stringp key)
+                     (characterp key)
+                     (vectorp key))
+                 (when (stringp key)
+                   (setq key (kbd key)))
+                 (when prefix
+                   (setq key (cond ((vectorp key) (vconcat prefix key))
+                                   (t (concat prefix key)))))
+                 (unless (> (length rest) 0)
+                   (user-error "Map has no definition for %s" key))
+                 (setq def (pop rest))
+                 (let (out-forms)
+                   (mapc (lambda (keymap)
+                           (if states
+                               (push `(evil-define-key ',states ,keymap ,key ,def) out-forms)
+                             (push `(define-key ,keymap ,key ,def) out-forms)))
+                         keymaps)
+                   (setq states '())
+                   out-forms))
+                (t (user-error "Invalid key %s" key))))
+         forms)
+        (setq i (1+ i)))
+      `(progn ,@(apply #'nconc (delete nil (delete (list nil) (reverse forms))))))))
 
 (provide 'core-defuns)
 ;;; core-defuns.el ends here
