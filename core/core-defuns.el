@@ -93,6 +93,7 @@ while emacs was open!"
          (-load-path
           (append (list metro-core-dir metro-packages-dir)
                   (--subdirs metro-core-dir t)
+                  (--subdirs metro-modules-dir t)
                   -packages-path
                   (--subdirs (expand-file-name (format "../../%s/bootstrap" emacs-version)
                                                metro-packages-dir))

@@ -24,6 +24,10 @@
   (expand-file-name "core" metro-emacs-dir)
   "Where essential files are stored")
 
+(defconst metro-modules-dir
+  (expand-file-name "modules" metro-emacs-dir)
+  "Where configuration modules are stored")
+
 (defconst metro-auto-cask
   (expand-file-name
    (format "%s/auto-cask.el" metro-emacs-dir)
