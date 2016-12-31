@@ -80,5 +80,14 @@
 (use-package swiper
   :commands (swiper swiper-all))
 
+(use-package emr
+  :commands (emr-show-refactor-menu emr-declare-command)
+  :config
+  (emr-initialize)
+  (define-key popup-menu-keymap [escape] 'keyboard-quit))
+
+(use-package expand-region
+  :commands (er/expand-region er/contract-region er/mark-symbol er/mark-word))
+
 (provide 'core-editor)
 ;;; end of core-editor.el

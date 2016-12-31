@@ -20,6 +20,9 @@
 ;; Editor -- core/core-editor.el
 (depends-on "which-key")
 (depends-on "undo-tree")
+(depends-on "swiper")
+(depends-on "quickrun")
+(depends-on "repl-toggle")
 
 ;; Evil -- core/core-evil.el
 (depends-on "evil")
@@ -35,6 +38,10 @@
 ;; Ivy --- core/core-ivy.el
 (depends-on "ivy")
 (depends-on "counsel")
+
+;; Python -- modules/module-python.el
+(depends-on "anaconda-mode")
+(depends-on "company-anaconda")
 
 ;; Completion
 (depends-on "company")

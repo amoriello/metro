@@ -24,6 +24,30 @@
      (setq-default gc-cons-threshold 4388608
                    gc-cons-percentage 0.4)))
 
+;; Where (py|rb)env version strings will be stored
+(defvar-local metro-ml--env-version nil)
+(defvar-local metro-ml--env-command nil)
+
+(defmacro def-version-cmd! (mode command)
+  "Define a COMMAND for MODE that will set `metro-ml--env-command' when that mode
+is activated, which should return the version number of the current environment.
+It is used by `metro-ml|env-update' to display a version number in the modeline.
+For instance:
+
+  (def-version-cmd! ruby-mode \"ruby --version | cut -d' ' -f2\")
+
+This will display the ruby version in the modeline in ruby-mode buffers. It is
+cached the first time."
+  `(add-hook ',mode (lambda () (setq doom-ml--env-command ,command))))
+
+(defun doom-ml-flycheck-count (state)
+  "Return flycheck information for the given error type STATE."
+  (when (flycheck-has-current-errors-p state)
+    (if (eq 'running flycheck-last-status-change)
+        "?"
+      (cdr-safe (assq state (flycheck-count-errors flycheck-current-errors))))))
+
+
 (defmacro after! (feature &rest forms)
   "A smart wrapper around `with-eval-after-load', that supresses warnings
 during compilation."
